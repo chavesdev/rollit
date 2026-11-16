@@ -38,9 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chavesdev.rollit.R
 import com.chavesdev.rollit.model.DiceRollHistoryItem
 import com.chavesdev.rollit.model.DiceType
 import com.chavesdev.rollit.model.RollResult
@@ -93,13 +95,13 @@ fun RollHistoryList(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.History,
-                        contentDescription = "Roll History",
+                        contentDescription = stringResource(R.string.roll_history),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Roll History",
+                        text = stringResource(R.string.roll_history),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -125,12 +127,12 @@ fun RollHistoryList(
                     TextButton(onClick = onClearHistory) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Clear History",
+                            contentDescription = stringResource(R.string.clear_history),
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Clear",
+                            text = stringResource(R.string.clear),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
@@ -147,12 +149,12 @@ fun RollHistoryList(
                 FilterChip(
                     selected = !showOnlyFavorites,
                     onClick = { showOnlyFavorites = false },
-                    label = { Text("All Rolls (${history.size})") }
+                    label = { Text(stringResource(R.string.all_rolls_format, history.size)) }
                 )
                 FilterChip(
                     selected = showOnlyFavorites,
                     onClick = { showOnlyFavorites = true },
-                    label = { Text("Favorites (${history.count { it.isFavorite }})") }
+                    label = { Text(stringResource(R.string.favorites_format, history.count { it.isFavorite })) }
                 )
             }
 
@@ -166,7 +168,7 @@ fun RollHistoryList(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (showOnlyFavorites) "No favorite rolls saved yet" else "No roll history yet. Roll the dice!",
+                        text = if (showOnlyFavorites) stringResource(R.string.no_favorites_saved) else stringResource(R.string.no_roll_history),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -256,7 +258,7 @@ private fun RollHistoryItemCard(
 
                 if (isCritHit) {
                     Text(
-                        text = "CRITICAL HIT",
+                        text = stringResource(R.string.critical_hit),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -264,7 +266,7 @@ private fun RollHistoryItemCard(
                     )
                 } else if (isCritFail) {
                     Text(
-                        text = "CRITICAL FAIL",
+                        text = stringResource(R.string.critical_fail),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.error
@@ -302,7 +304,7 @@ private fun RollHistoryItemCard(
                 IconButton(onClick = onRepeatRoll) {
                     Icon(
                         imageVector = Icons.Default.Replay,
-                        contentDescription = "Re-roll",
+                        contentDescription = stringResource(R.string.reroll),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
@@ -311,7 +313,7 @@ private fun RollHistoryItemCard(
                 IconButton(onClick = onToggleFavorite) {
                     Icon(
                         imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Toggle Favorite",
+                        contentDescription = stringResource(R.string.toggle_favorite),
                         tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )

@@ -1,14 +1,10 @@
 package com.chavesdev.rollit.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,10 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chavesdev.rollit.R
 import com.chavesdev.rollit.model.DiceRollHistoryItem
 import com.chavesdev.rollit.model.DiceType
 import com.chavesdev.rollit.model.RollResult
@@ -110,87 +107,55 @@ fun MainRollScreenContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Rollit",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                    }
+                    )
                 },
                 actions = {
                     IconButton(onClick = { showSettingsSheet = true }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
+                            contentDescription = stringResource(R.string.settings),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = Color.Transparent
                 )
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .background(
-                    Brush.linearGradient(
-                        listOf(Color(0xFF050B14), DeepNavyBackground)
-                ))
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                    Brush.radialGradient(
+                        listOf(Color(0xFF0F172A), DeepNavyBackground),
+                        radius = 1200f
+                    )
+                )
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
         ) {
-
-//            // Configuration & Control Panel
-//            DiceConfigPanel(
-//                selectedDiceType = uiState.selectedDiceType,
-//                quantity = uiState.quantity,
-//                modifierValue = uiState.modifier,
-//                isRolling = uiState.isRolling,
-//                onDiceTypeSelected = onSelectDiceType,
-//                onQuantityChange = onQuantityChange,
-//                onModifierChange = onModifierChange,
-//                onRollClick = onRollClick,
-//                onClearClick = {
-//                    onQuantityChange(1)
-//                    onModifierChange(0)
-//                },
-//                onQuickPresetClick = onQuickPresetClick
-//            )
-//
-            Spacer(modifier = Modifier.height(40.dp))
-
-
-            // Animated Dice View Box
+            // Immersive Fullscreen Animated Dice View
             AnimatedDiceView(
                 diceType = uiState.selectedDiceType,
                 quantity = uiState.quantity,
                 isRolling = uiState.isRolling,
                 rollingValues = uiState.rollingDisplayValues,
                 currentResult = uiState.currentResult,
-                onSwipeRoll = onSwipeRoll
+                onSwipeRoll = onSwipeRoll,
+                modifier = Modifier.fillMaxSize()
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Roll History Component List
-//            RollHistoryList(
-//                history = uiState.history,
-//                onToggleFavorite = onToggleFavorite,
-//                onRepeatRoll = onRepeatRoll,
-//                onClearHistory = onClearHistory
-//            )
-//
-//            Spacer(modifier = Modifier.height(24.dp))
         }
 
         // Settings Bottom Sheet
@@ -214,21 +179,21 @@ fun MainRollScreenContent(
 @Composable
 fun MainRollScreenPreview() {
     val sampleRoll = RollResult(
-        diceType = DiceType.D6,
-        quantity = 2,
-        rolls = listOf(5, 6),
-        modifier = 2,
-        label = "Dmg Roll"
+        diceType = DiceType.D20,
+        quantity = 1,
+        rolls = listOf(20),
+        modifier = 3,
+        label = "Attack Roll"
     )
     val sampleState = RollUiState(
-        selectedDiceType = DiceType.D6,
-        quantity = 2,
-        modifier = 2,
+        selectedDiceType = DiceType.D20,
+        quantity = 1,
+        modifier = 3,
         currentResult = sampleRoll,
         history = listOf(
             DiceRollHistoryItem(
                 rollResult = sampleRoll,
-                presetName = "Dmg Roll",
+                presetName = "Attack Roll",
                 isFavorite = true
             )
         )

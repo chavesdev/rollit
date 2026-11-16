@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Rollit</string>
+    <string name="settings">Configurações</string>
+    <string name="dice_hardware_settings">Configurações de Dados e Hardware</string>
+    <string name="rolling">Rolando…</string>
+    <string name="swipe_or_tap_to_roll">Deslize ou toque para rolar</string>
+    <string name="roll_instructions">Deslize, toque no dado ou chacoalhe o telefone para rolar</string>
+    <string name="total_label">Total: </string>
+    <string name="quantity">Quantidade</string>
+    <string name="decrease_format">Diminuir %1$s</string>
+    <string name="increase_format">Aumentar %1$s</string>
+    <string name="roll_history">Histórico de Rolagens</string>
+    <string name="clear_history">Limpar Histórico</string>
+    <string name="clear">Limpar</string>
+    <string name="all_rolls_format">Todas (%1$d)</string>
+    <string name="favorites_format">Favoritos (%1$d)</string>
+    <string name="no_favorites_saved">Nenhuma rolagem favorita salva ainda</string>
+    <string name="no_roll_history">Nenhum histórico ainda. Role os dados!</string>
+    <string name="reroll">Rolar novamente</string>
+    <string name="toggle_favorite">Alternar Favorito</string>
+    <string name="critical_hit">ACERTO CRÍTICO</string>
+    <string name="critical_fail">FALHA CRÍTICA</string>
+    <string name="shake_to_roll">Chacoalhar para Rolar</string>
+    <string name="shake_to_roll_subtitle">Chacoalhe o dispositivo fisicamente para rolar os dados</string>
+    <string name="sensitivity">Sensibilidade</string>
+    <string name="shake_sensitivity_format">Sensibilidade ao Chacoalhar: %1$.1f G</string>
+    <string name="sound_effects">Efeitos Sonoros</string>
+    <string name="sound_effects_subtitle">Reproduzir som ao rolar dados e em críticos</string>
+    <string name="haptic_vibration">Vibração Hápica</string>
+    <string name="haptic_vibration_subtitle">Vibrar hardware ao rolar dados e eventos críticos</string>
+</resources>

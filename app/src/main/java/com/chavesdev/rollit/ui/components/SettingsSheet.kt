@@ -28,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chavesdev.rollit.R
 import com.chavesdev.rollit.ui.theme.RollitTheme
 
 /**
@@ -67,12 +69,12 @@ fun SettingsSheet(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
+                    contentDescription = stringResource(R.string.settings),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Dice & Hardware Settings",
+                    text = stringResource(R.string.dice_hardware_settings),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -84,8 +86,8 @@ fun SettingsSheet(
 
             // Shake to Roll Toggle
             SettingSwitchRow(
-                title = "Shake to Roll",
-                subtitle = "Shake device physically to trigger dice roll",
+                title = stringResource(R.string.shake_to_roll),
+                subtitle = stringResource(R.string.shake_to_roll_subtitle),
                 icon = Icons.Default.ScreenRotation,
                 checked = isShakeEnabled,
                 onCheckedChange = onShakeToggle
@@ -107,12 +109,12 @@ fun SettingsSheet(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.GraphicEq,
-                                contentDescription = "Sensitivity",
+                                contentDescription = stringResource(R.string.sensitivity),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Shake Sensitivity: ${String.format(java.util.Locale.getDefault(), "%.1f", shakeSensitivity)} G",
+                                text = stringResource(R.string.shake_sensitivity_format, shakeSensitivity),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -137,8 +139,8 @@ fun SettingsSheet(
 
             // Sound Effects Toggle
             SettingSwitchRow(
-                title = "Sound Effects",
-                subtitle = "Play audio feedback during dice roll and criticals",
+                title = stringResource(R.string.sound_effects),
+                subtitle = stringResource(R.string.sound_effects_subtitle),
                 icon = Icons.AutoMirrored.Filled.VolumeUp,
                 checked = isSoundEnabled,
                 onCheckedChange = onSoundToggle
@@ -148,8 +150,8 @@ fun SettingsSheet(
 
             // Haptic Feedback Toggle
             SettingSwitchRow(
-                title = "Haptic Vibration",
-                subtitle = "Vibrate hardware on dice roll and critical events",
+                title = stringResource(R.string.haptic_vibration),
+                subtitle = stringResource(R.string.haptic_vibration_subtitle),
                 icon = Icons.Default.Vibration,
                 checked = isHapticsEnabled,
                 onCheckedChange = onHapticsToggle

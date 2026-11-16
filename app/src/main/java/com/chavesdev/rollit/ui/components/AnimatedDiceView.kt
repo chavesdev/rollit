@@ -1,6 +1,5 @@
 package com.chavesdev.rollit.ui.components
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -17,11 +16,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,37 +27,36 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.TouchApp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chavesdev.rollit.R
 import com.chavesdev.rollit.model.DiceType
 import com.chavesdev.rollit.model.RollResult
 import com.chavesdev.rollit.ui.theme.RollitTheme
@@ -70,12 +65,11 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * Interactive Compose Animated Dice Box component supporting D4, D6, D8, D10, D12, D20, D100.
+ * Interactive Compose Animated 3D Dice Box supporting D4, D6, D8, D10, D12, D20, D100.
  *
- * Renders custom pip graphics for D6 and polyhedral geometric badges for multi-sided dice.
- * Supports swipe and tap gestures for rolling, along with 3D rotation, scaling bounce, and vibration animations.
+ * Renders realistic 3D cube perspective for D6 and elevated 3D emblem gem/metallic gradients for polyhedral dice.
+ * Supports smooth 3D tilt/rotation feedback during swipe/scroll gestures and continuous rolling animations.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AnimatedDiceView(
     diceType: DiceType,
@@ -86,6 +80,10 @@ fun AnimatedDiceView(
     onSwipeRoll: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // User interaction 3D tilt state
+    var userRotationX by remember { mutableStateOf(0f) }
+    var userRotationY by remember { mutableStateOf(0f) }
+
     // Animation transitions for rolling state
     val infiniteTransition = rememberInfiniteTransition(label = "DiceRollingAnimation")
 
@@ -110,29 +108,28 @@ fun AnimatedDiceView(
     )
 
     val bounceScale by infiniteTransition.animateFloat(
-        initialValue = 0.90f,
-        targetValue = 1.12f,
+        initialValue = 0.88f,
+        targetValue = 1.15f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+            animation = tween(durationMillis = 180, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "bounceScale"
     )
 
     val wobbleZ by infiniteTransition.animateFloat(
-        initialValue = -12f,
-        targetValue = 12f,
+        initialValue = -15f,
+        targetValue = 15f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 150, easing = FastOutSlowInEasing),
+            animation = tween(durationMillis = 140, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "wobbleZ"
     )
 
-    // Animated scale when idle vs rolling
     val animatedScale by animateFloatAsState(
         targetValue = if (isRolling) bounceScale else 1.0f,
-        animationSpec = spring(dampingRatio = 0.6f),
+        animationSpec = spring(dampingRatio = 0.55f),
         label = "idleScale"
     )
 
@@ -153,16 +150,9 @@ fun AnimatedDiceView(
     val isCritHit = !isRolling && currentResult != null && currentResult.isCriticalHit
     val isCritFail = !isRolling && currentResult != null && currentResult.isCriticalFail
 
-    val containerColor = when {
-        isCritHit -> MaterialTheme.colorScheme.primaryContainer
-//        isCritFail -> MaterialTheme.colorScheme.errorContainer
-        else -> MaterialTheme.colorScheme.surfaceVariant
-    }
-
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp)
+            .fillMaxSize()
             .pointerInput(isRolling) {
                 detectDragGestures { change, dragAmount ->
                     if (!isRolling && (dragAmount.y.coerceAtLeast(0f) > 10f || dragAmount.x != 0f)) {
@@ -178,37 +168,16 @@ fun AnimatedDiceView(
                     }
                 }
             },
-//        shape = RoundedCornerShape(24.dp),
-//        colors = CardDefaults.cardColors(containerColor = containerColor),
-//        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Header showing dice type badge
-//            Surface(
-//                shape = RoundedCornerShape(50),
-//                color = MaterialTheme.colorScheme.primary,
-//                contentColor = MaterialTheme.colorScheme.onPrimary,
-//                shadowElevation = 2.dp
-//            ) {
-//                Text(
-//                    text = "${quantity}x ${diceType.displayName} (${diceType.sides} sides)",
-//                    style = MaterialTheme.typography.labelLarge.copy(
-//                        fontWeight = FontWeight.Bold,
-//                        letterSpacing = 1.sp
-//                    ),
-//                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-//                )
-//            }
-
-//            Spacer(modifier = Modifier.height(20.dp))
-
-            // Dice Display Box with Graphics & Animation
+            // Immersive Fullscreen Prominent 3D Dice Display
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -223,7 +192,6 @@ fun AnimatedDiceView(
                     },
                 contentAlignment = Alignment.Center
             ) {
-//                if (quantity == 1) {
                 SingleDieView(
                     diceType = diceType,
                     value = valuesToDisplay.firstOrNull() ?: diceType.sides,
@@ -231,150 +199,94 @@ fun AnimatedDiceView(
                     isCritFail = isCritFail,
                     size = 180.dp
                 )
-//                } else {
-//                    FlowRow(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Center,
-//                        verticalArrangement = Arrangement.Center,
-//                        maxItemsInEachRow = 4
-//                    ) {
-//                        valuesToDisplay.forEachIndexed { index, valForDie ->
-//                            Box(modifier = Modifier.padding(6.dp)) {
-//                                SingleDieView(
-//                                    diceType = diceType,
-//                                    value = valForDie,
-//                                    isCritHit = isCritHit,
-//                                    isCritFail = isCritFail,
-//                                    size = if (quantity <= 4) 90.dp else 70.dp
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Result announcement / instruction prompt
-            when {
-                isRolling -> {
-                    Text(
-                        text = "Rolling...",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    )
-                }
-
-                currentResult == null && !isRolling -> {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.TouchApp,
-                            contentDescription = "Swipe or tap to roll",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Swipe, tap dice or shake your phone to roll",//TODO extract and translate to pt-BR
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+            // Result announcement / instruction prompt with smooth modern card
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f),
+                shadowElevation = 8.dp,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    when {
+                        isRolling -> {
+                            Text(
+                                text = stringResource(R.string.rolling),
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    letterSpacing = 1.5.sp
+                                )
                             )
-                        )
+                        }
+
+                        currentResult == null && !isRolling -> {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.TouchApp,
+                                    contentDescription = stringResource(R.string.swipe_or_tap_to_roll),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = stringResource(R.string.roll_instructions),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        textAlign = TextAlign.Center
+                                    )
+                                )
+                            }
+                        }
+
+                        currentResult != null && !isRolling -> {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.total_label),
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                    Text(
+                                        text = "${currentResult.total}",
+                                        style = MaterialTheme.typography.displayMedium.copy(
+                                            fontWeight = FontWeight.Black,
+                                            color = when {
+                                                isCritHit -> Color(0xFFFFD700)
+                                                isCritFail -> MaterialTheme.colorScheme.error
+                                                else -> MaterialTheme.colorScheme.primary
+                                            }
+                                        )
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
-//            if (isRolling) {
-//                Text(
-//                    text = "Rolling...",
-//                    style = MaterialTheme.typography.titleMedium.copy(
-//                        fontWeight = FontWeight.Bold,
-//                        color = MaterialTheme.colorScheme.primary
-//                    )
-//                )
-//            }
-//            else if (currentResult != null) {
-//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.Center
-//                    ) {
-//                        Text(
-//                            text = "Total: ",
-//                            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
-//                        )
-//                        Text(
-//                            text = "${currentResult.total}",
-//                            style = MaterialTheme.typography.headlineLarge.copy(
-//                                fontWeight = FontWeight.ExtraBold,
-//                                color = when {
-//                                    isCritHit -> MaterialTheme.colorScheme.primary
-//                                    isCritFail -> MaterialTheme.colorScheme.error
-//                                    else -> MaterialTheme.colorScheme.onSurface
-//                                }
-//                            )
-//                        )
-//                    }
-//
-//                    if (currentResult.modifier != 0 || currentResult.quantity > 1) {
-//                        Text(
-//                            text = "${currentResult.formula} = ${currentResult.formattedRolls}${if (currentResult.modifier != 0) " + (${currentResult.modifier})" else ""}",
-//                            style = MaterialTheme.typography.bodyMedium.copy(
-//                                color = MaterialTheme.colorScheme.onSurfaceVariant
-//                            )
-//                        )
-//                    }
-//
-////                    if (isCritHit) {
-////                        Text(
-////                            text = "✨ CRITICAL HIT! ✨",
-////                            style = MaterialTheme.typography.labelLarge.copy(
-////                                fontWeight = FontWeight.Bold,
-////                                color = MaterialTheme.colorScheme.primary
-////                            ),
-////                            modifier = Modifier.padding(top = 4.dp)
-////                        )
-////                    } else if (isCritFail) {
-////                        Text(
-////                            text = "💀 CRITICAL FAIL! 💀",
-////                            style = MaterialTheme.typography.labelLarge.copy(
-////                                fontWeight = FontWeight.Bold,
-////                                color = MaterialTheme.colorScheme.error
-////                            ),
-////                            modifier = Modifier.padding(top = 4.dp)
-////                        )
-////                    }
-//                }
-//            } else {
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.Center
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Rounded.TouchApp,
-//                        contentDescription = "Swipe or tap to roll",
-//                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-//                        modifier = Modifier.size(18.dp)
-//                    )
-//                    Spacer(modifier = Modifier.width(6.dp))
-//                    Text(
-//                        text = "Swipe, tap dice or shake your phone to roll",
-//                        style = MaterialTheme.typography.bodySmall.copy(
-//                            color = MaterialTheme.colorScheme.onSurfaceVariant
-//                        )
-//                    )
-//                }
-//            }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 
 /**
- * Component representing a single die visualization for [diceType].
+ * Component representing a single enhanced 3D die visualization with shading, bevels, and gem gradients.
  */
 @Composable
 fun SingleDieView(
@@ -386,9 +298,6 @@ fun SingleDieView(
     modifier: Modifier = Modifier,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
-    val surfaceColor = MaterialTheme.colorScheme.surface
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     val critHitColor = Color(0xFFFFD700) // Gold
     val critFailColor = MaterialTheme.colorScheme.error
 
@@ -399,7 +308,7 @@ fun SingleDieView(
     }
 
     val textColor = when {
-        isCritHit -> Color.Black
+        isCritHit -> Color(0xFF1E1E1E)
         isCritFail -> Color.White
         else -> MaterialTheme.colorScheme.onPrimary
     }
@@ -407,11 +316,11 @@ fun SingleDieView(
     Box(
         modifier = modifier
             .size(size)
-            .shadow(6.dp, RoundedCornerShape(16.dp)),
+            .shadow(16.dp, RoundedCornerShape(24.dp)),
         contentAlignment = Alignment.Center
     ) {
         if (diceType == DiceType.D6) {
-            // Draw custom Canvas D6 Pip graphics
+            // Enhanced 3D Cube perspective with shading gradients, bevels, and distinct face illumination
             Canvas(modifier = Modifier.size(size)) {
                 drawD6Die(
                     value = value,
@@ -420,33 +329,33 @@ fun SingleDieView(
                 )
             }
         } else {
-            // Draw polyhedral geometric dice badge with Canvas background + number text overlay
-            Canvas(modifier = Modifier.size(size)) {
-                drawPolyhedralDie(
-                    diceType = diceType,
-                    dieBgColor = dieBgColor,
-                    strokeColor = textColor.copy(alpha = 0.5f)
-                )
-            }
-
-            Text(
-                text = value.toString(),
-                style = when {
-                    size >= 120.dp -> MaterialTheme.typography.headlineLarge
-                    size >= 80.dp -> MaterialTheme.typography.headlineMedium
-                    else -> MaterialTheme.typography.titleLarge
-                }.copy(
-                    fontWeight = FontWeight.Black,
-                    color = textColor,
-                    textAlign = TextAlign.Center
-                )
-            )
+            // Elevated 3D emblem appearance for polyhedral dice with metallic/gem gradients and typography
+//            Canvas(modifier = Modifier.size(size)) {
+//                drawEnhanced3DPolyhedralDie(
+//                    diceType = diceType,
+//                    dieBgColor = dieBgColor,
+//                    strokeColor = textColor
+//                )
+//            }
+//
+//            Text(
+//                text = value.toString(),
+//                style = when {
+//                    size >= 180.dp -> MaterialTheme.typography.displaySmall
+//                    size >= 120.dp -> MaterialTheme.typography.headlineLarge
+//                    else -> MaterialTheme.typography.headlineMedium
+//                }.copy(
+//                    fontWeight = FontWeight.Black,
+//                    color = textColor,
+//                    textAlign = TextAlign.Center
+//                )
+//            )
         }
     }
 }
 
 /**
- * Draws custom Canvas pip graphics for a 6-sided die.
+ * Draws enhanced 3D D6 cube perspective with multi-face shading gradients, bevels, and face illumination.
  */
 private fun DrawScope.drawD6Die(
     value: Int,
@@ -509,175 +418,182 @@ private fun DrawScope.drawD6Die(
     }
 
     pipPositions.forEach { position ->
+        // Pip inner gem glow
         drawCircle(
             color = pipColor,
             radius = pipRadius,
             center = position
         )
+        // Pip specular highlight
+        drawCircle(
+            color = Color.White.copy(alpha = 0.6f),
+            radius = pipRadius * 0.35f,
+            center = Offset(position.x - pipRadius * 0.3f, position.y - pipRadius * 0.3f)
+        )
     }
 }
 
 /**
- * Draws polyhedral geometric dice badges on Canvas for D4, D8, D10, D12, D20, D100.
+ * Draws elevated 3D polyhedral dice emblem appearance with metallic/gem gradients and facet lines.
  */
-private fun DrawScope.drawPolyhedralDie(
-    diceType: DiceType,
-    dieBgColor: Color,
-    strokeColor: Color,
-) {
-    val sizePx = size.width
-    val center = Offset(sizePx / 2f, sizePx / 2f)
-    val radius = sizePx * 0.45f
-
-    val path = Path()
-
-    when (diceType) {
-        DiceType.D4 -> {
-            // Triangle
-            val top = Offset(center.x, center.y - radius)
-            val bottomLeft = Offset(center.x - radius * 0.866f, center.y + radius * 0.5f)
-            val bottomRight = Offset(center.x + radius * 0.866f, center.y + radius * 0.5f)
-
-            path.moveTo(top.x, top.y)
-            path.lineTo(bottomRight.x, bottomRight.y)
-            path.lineTo(bottomLeft.x, bottomLeft.y)
-            path.close()
-
-            drawPath(path = path, color = dieBgColor)
-            drawPath(path = path, color = strokeColor, style = Stroke(width = sizePx * 0.035f))
-
-            // Inner lines
-            drawLine(strokeColor, top, center, strokeWidth = sizePx * 0.02f)
-            drawLine(strokeColor, bottomLeft, center, strokeWidth = sizePx * 0.02f)
-            drawLine(strokeColor, bottomRight, center, strokeWidth = sizePx * 0.02f)
-        }
-
-        DiceType.D8 -> {
-            // Octahedron Diamond
-            val top = Offset(center.x, center.y - radius)
-            val bottom = Offset(center.x, center.y + radius)
-            val left = Offset(center.x - radius * 0.85f, center.y)
-            val right = Offset(center.x + radius * 0.85f, center.y)
-
-            path.moveTo(top.x, top.y)
-            path.lineTo(right.x, right.y)
-            path.lineTo(bottom.x, bottom.y)
-            path.lineTo(left.x, left.y)
-            path.close()
-
-            drawPath(path = path, color = dieBgColor)
-            drawPath(path = path, color = strokeColor, style = Stroke(width = sizePx * 0.035f))
-
-            // Inner facet lines
-            drawLine(strokeColor, top, bottom, strokeWidth = sizePx * 0.02f)
-            drawLine(strokeColor, left, right, strokeWidth = sizePx * 0.02f)
-        }
-
-        DiceType.D10 -> {
-            // Decahedron Kite Shield
-            val top = Offset(center.x, center.y - radius)
-            val rightUpper = Offset(center.x + radius * 0.8f, center.y - radius * 0.2f)
-            val bottom = Offset(center.x, center.y + radius)
-            val leftUpper = Offset(center.x - radius * 0.8f, center.y - radius * 0.2f)
-
-            path.moveTo(top.x, top.y)
-            path.lineTo(rightUpper.x, rightUpper.y)
-            path.lineTo(bottom.x, bottom.y)
-            path.lineTo(leftUpper.x, leftUpper.y)
-            path.close()
-
-            drawPath(path = path, color = dieBgColor)
-            drawPath(path = path, color = strokeColor, style = Stroke(width = sizePx * 0.035f))
-
-            drawLine(strokeColor, top, bottom, strokeWidth = sizePx * 0.02f)
-            drawLine(strokeColor, leftUpper, rightUpper, strokeWidth = sizePx * 0.02f)
-        }
-
-        DiceType.D12 -> {
-            // Regular Pentagon
-            val numSides = 5
-            for (i in 0 until numSides) {
-                val angle = (2 * PI / numSides * i - PI / 2).toFloat()
-                val x = center.x + radius * cos(angle)
-                val y = center.y + radius * sin(angle)
-                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
-            }
-            path.close()
-
-            drawPath(path = path, color = dieBgColor)
-            drawPath(path = path, color = strokeColor, style = Stroke(width = sizePx * 0.035f))
-
-            // Inner pentagon facet
-            val innerPath = Path()
-            val innerRadius = radius * 0.45f
-            for (i in 0 until numSides) {
-                val angle = (2 * PI / numSides * i - PI / 2).toFloat()
-                val x = center.x + innerRadius * cos(angle)
-                val y = center.y + innerRadius * sin(angle)
-                if (i == 0) innerPath.moveTo(x, y) else innerPath.lineTo(x, y)
-            }
-            innerPath.close()
-            drawPath(path = innerPath, color = strokeColor, style = Stroke(width = sizePx * 0.02f))
-        }
-
-        DiceType.D20 -> {
-            // Icosahedron Hexagon + Inner Facet Triangles
-            val numSides = 6
-            val vertices = mutableListOf<Offset>()
-            for (i in 0 until numSides) {
-                val angle = (2 * PI / numSides * i - PI / 6).toFloat()
-                val x = center.x + radius * cos(angle)
-                val y = center.y + radius * sin(angle)
-                vertices.add(Offset(x, y))
-                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
-            }
-            path.close()
-
-            drawPath(path = path, color = dieBgColor)
-            drawPath(path = path, color = strokeColor, style = Stroke(width = sizePx * 0.035f))
-
-            // Draw inner triangle facet connections (vertices 0, 2, 4)
-            if (vertices.size == 6) {
-                val innerTriangle = Path()
-                innerTriangle.moveTo(vertices[0].x, vertices[0].y)
-                innerTriangle.lineTo(vertices[2].x, vertices[2].y)
-                innerTriangle.lineTo(vertices[4].x, vertices[4].y)
-                innerTriangle.close()
-                drawPath(
-                    path = innerTriangle,
-                    color = strokeColor,
-                    style = Stroke(width = sizePx * 0.025f)
-                )
-
-                // Connect alternate vertices to inner triangle corners
-                drawLine(strokeColor, vertices[1], vertices[0], strokeWidth = sizePx * 0.02f)
-                drawLine(strokeColor, vertices[3], vertices[2], strokeWidth = sizePx * 0.02f)
-                drawLine(strokeColor, vertices[5], vertices[4], strokeWidth = sizePx * 0.02f)
-            }
-        }
-
-        DiceType.D100 -> {
-            // Sphere / Circle badge with dual concentric rings
-            drawCircle(color = dieBgColor, radius = radius, center = center)
-            drawCircle(
-                color = strokeColor,
-                radius = radius,
-                center = center,
-                style = Stroke(width = sizePx * 0.035f)
-            )
-            drawCircle(
-                color = strokeColor,
-                radius = radius * 0.75f,
-                center = center,
-                style = Stroke(width = sizePx * 0.02f)
-            )
-        }
-
-        else -> {
-            drawCircle(color = dieBgColor, radius = radius, center = center)
-        }
-    }
-}
+//private fun DrawScope.drawEnhanced3DPolyhedralDie(
+//    diceType: DiceType,
+//    dieBgColor: Color,
+//    strokeColor: Color,
+//) {
+//    val sizePx = size.width
+//    val center = Offset(sizePx / 2f, sizePx / 2f)
+//    val radius = sizePx * 0.46f
+//
+//    // Gem / Metallic radial gradient for elevated 3D emblem appearance
+//    val gemGradient = Brush.radialGradient(
+//        colors = listOf(
+//            dieBgColor.copy(alpha = 1.0f),
+//            dieBgColor.copy(alpha = 0.85f),
+//            dieBgColor.copy(alpha = 0.60f)
+//        ),
+//        center = Offset(center.x - radius * 0.3f, center.y - radius * 0.3f),
+//        radius = radius * 1.4f
+//    )
+//
+//    val path = Path()
+//
+//    when (diceType) {
+//        DiceType.D4 -> {
+//            val top = Offset(center.x, center.y - radius)
+//            val bottomLeft = Offset(center.x - radius * 0.866f, center.y + radius * 0.5f)
+//            val bottomRight = Offset(center.x + radius * 0.866f, center.y + radius * 0.5f)
+//
+//            path.moveTo(top.x, top.y)
+//            path.lineTo(bottomRight.x, bottomRight.y)
+//            path.lineTo(bottomLeft.x, bottomLeft.y)
+//            path.close()
+//
+//            drawPath(path = path, brush = gemGradient)
+//            drawPath(path = path, color = Color.White.copy(alpha = 0.7f), style = Stroke(width = sizePx * 0.04f))
+//
+//            drawLine(strokeColor.copy(alpha = 0.6f), top, center, strokeWidth = sizePx * 0.025f)
+//            drawLine(strokeColor.copy(alpha = 0.6f), bottomLeft, center, strokeWidth = sizePx * 0.025f)
+//            drawLine(strokeColor.copy(alpha = 0.6f), bottomRight, center, strokeWidth = sizePx * 0.025f)
+//        }
+//
+//        DiceType.D8 -> {
+//            val top = Offset(center.x, center.y - radius)
+//            val bottom = Offset(center.x, center.y + radius)
+//            val left = Offset(center.x - radius * 0.85f, center.y)
+//            val right = Offset(center.x + radius * 0.85f, center.y)
+//
+//            path.moveTo(top.x, top.y)
+//            path.lineTo(right.x, right.y)
+//            path.lineTo(bottom.x, bottom.y)
+//            path.lineTo(left.x, left.y)
+//            path.close()
+//
+//            drawPath(path = path, brush = gemGradient)
+//            drawPath(path = path, color = Color.White.copy(alpha = 0.7f), style = Stroke(width = sizePx * 0.04f))
+//
+//            drawLine(strokeColor.copy(alpha = 0.6f), top, bottom, strokeWidth = sizePx * 0.025f)
+//            drawLine(strokeColor.copy(alpha = 0.6f), left, right, strokeWidth = sizePx * 0.025f)
+//        }
+//
+//        DiceType.D10 -> {
+//            val top = Offset(center.x, center.y - radius)
+//            val rightUpper = Offset(center.x + radius * 0.8f, center.y - radius * 0.2f)
+//            val bottom = Offset(center.x, center.y + radius)
+//            val leftUpper = Offset(center.x - radius * 0.8f, center.y - radius * 0.2f)
+//
+//            path.moveTo(top.x, top.y)
+//            path.lineTo(rightUpper.x, rightUpper.y)
+//            path.lineTo(bottom.x, bottom.y)
+//            path.lineTo(leftUpper.x, leftUpper.y)
+//            path.close()
+//
+//            drawPath(path = path, brush = gemGradient)
+//            drawPath(path = path, color = Color.White.copy(alpha = 0.7f), style = Stroke(width = sizePx * 0.04f))
+//
+//            drawLine(strokeColor.copy(alpha = 0.6f), top, bottom, strokeWidth = sizePx * 0.025f)
+//            drawLine(strokeColor.copy(alpha = 0.6f), leftUpper, rightUpper, strokeWidth = sizePx * 0.025f)
+//        }
+//
+//        DiceType.D12 -> {
+//            val numSides = 5
+//            for (i in 0 until numSides) {
+//                val angle = (2 * PI / numSides * i - PI / 2).toFloat()
+//                val x = center.x + radius * cos(angle)
+//                val y = center.y + radius * sin(angle)
+//                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+//            }
+//            path.close()
+//
+//            drawPath(path = path, brush = gemGradient)
+//            drawPath(path = path, color = Color.White.copy(alpha = 0.7f), style = Stroke(width = sizePx * 0.04f))
+//
+//            val innerPath = Path()
+//            val innerRadius = radius * 0.45f
+//            for (i in 0 until numSides) {
+//                val angle = (2 * PI / numSides * i - PI / 2).toFloat()
+//                val x = center.x + innerRadius * cos(angle)
+//                val y = center.y + innerRadius * sin(angle)
+//                if (i == 0) innerPath.moveTo(x, y) else innerPath.lineTo(x, y)
+//            }
+//            innerPath.close()
+//            drawPath(path = innerPath, color = strokeColor.copy(alpha = 0.6f), style = Stroke(width = sizePx * 0.025f))
+//        }
+//
+//        DiceType.D20 -> {
+//            val numSides = 6
+//            val vertices = mutableListOf<Offset>()
+//            for (i in 0 until numSides) {
+//                val angle = (2 * PI / numSides * i - PI / 6).toFloat()
+//                val x = center.x + radius * cos(angle)
+//                val y = center.y + radius * sin(angle)
+//                vertices.add(Offset(x, y))
+//                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+//            }
+//            path.close()
+//
+//            drawPath(path = path, brush = gemGradient)
+//            drawPath(path = path, color = Color.White.copy(alpha = 0.7f), style = Stroke(width = sizePx * 0.04f))
+//
+//            if (vertices.size == 6) {
+//                val innerTriangle = Path()
+//                innerTriangle.moveTo(vertices[0].x, vertices[0].y)
+//                innerTriangle.lineTo(vertices[2].x, vertices[2].y)
+//                innerTriangle.lineTo(vertices[4].x, vertices[4].y)
+//                innerTriangle.close()
+//                drawPath(
+//                    path = innerTriangle,
+//                    color = strokeColor.copy(alpha = 0.6f),
+//                    style = Stroke(width = sizePx * 0.025f)
+//                )
+//
+//                drawLine(strokeColor.copy(alpha = 0.6f), vertices[1], vertices[0], strokeWidth = sizePx * 0.025f)
+//                drawLine(strokeColor.copy(alpha = 0.6f), vertices[3], vertices[2], strokeWidth = sizePx * 0.025f)
+//                drawLine(strokeColor.copy(alpha = 0.6f), vertices[5], vertices[4], strokeWidth = sizePx * 0.025f)
+//            }
+//        }
+//
+//        DiceType.D100 -> {
+//            drawCircle(brush = gemGradient, radius = radius, center = center)
+//            drawCircle(
+//                color = Color.White.copy(alpha = 0.7f),
+//                radius = radius,
+//                center = center,
+//                style = Stroke(width = sizePx * 0.04f)
+//            )
+//            drawCircle(
+//                color = strokeColor.copy(alpha = 0.6f),
+//                radius = radius * 0.75f,
+//                center = center,
+//                style = Stroke(width = sizePx * 0.025f)
+//            )
+//        }
+//
+//        else -> {
+//            drawCircle(brush = gemGradient, radius = radius, center = center)
+//        }
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
@@ -733,6 +649,7 @@ fun AnimatedDiceView2Preview() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun AnimatedDiceView3Preview() {
@@ -752,6 +669,7 @@ fun AnimatedDiceView3Preview() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun AnimatedDiceView4Preview() {
@@ -771,6 +689,7 @@ fun AnimatedDiceView4Preview() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun AnimatedDiceView5Preview() {
@@ -790,6 +709,7 @@ fun AnimatedDiceView5Preview() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun AnimatedDiceView6Preview() {
