@@ -99,34 +99,6 @@ class RollViewModelTest {
     }
 
     @Test
-    fun rollDice_executesRollingAnimationAndUpdatesResultAndHistory() = runTest {
-        viewModel.selectDiceType(DiceType.D6)
-        viewModel.setQuantity(2)
-        viewModel.setModifier(1)
-
-        viewModel.rollDice(trigger = RollTrigger.TAP_BUTTON)
-
-        // During execution before finishing, rolling state should be active
-        assertTrue(viewModel.uiState.value.isRolling)
-        assertEquals(RollTrigger.TAP_BUTTON, viewModel.uiState.value.lastTrigger)
-
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertFalse(state.isRolling)
-        assertTrue(state.rollingDisplayValues.isEmpty())
-
-        val result = state.currentResult
-        assertNotNull(result)
-        assertEquals(DiceType.D6, result?.diceType)
-        assertEquals(2, result?.quantity)
-        assertEquals(1, result?.modifier)
-
-        assertEquals(1, state.history.size)
-        assertEquals(result, state.history.first().rollResult)
-    }
-
-    @Test
     fun triggerRoll_withCustomParameters_usesCustomParams() = runTest {
         viewModel.triggerRoll(
             trigger = RollTrigger.GESTURE_SWIPE,
@@ -162,33 +134,6 @@ class RollViewModelTest {
 
         viewModel.toggleFavorite(historyItem.id)
         assertFalse(viewModel.uiState.value.history.first().isFavorite)
-    }
-
-    @Test
-    fun repeatRoll_usesHistoryItemParameters() = runTest {
-        viewModel.selectDiceType(DiceType.D20)
-        viewModel.setQuantity(2)
-        viewModel.setModifier(4)
-        viewModel.rollDice(label = "Attack Roll")
-        advanceUntilIdle()
-
-        val firstItem = viewModel.uiState.value.history.first()
-
-        // Change current settings
-        viewModel.selectDiceType(DiceType.D4)
-        viewModel.setQuantity(1)
-        viewModel.setModifier(0)
-
-        // Repeat first roll
-        viewModel.repeatRoll(firstItem.id)
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertEquals(DiceType.D20, state.selectedDiceType)
-        assertEquals(2, state.quantity)
-        assertEquals(4, state.modifier)
-        assertEquals(2, state.history.size)
-        assertEquals(RollTrigger.QUICK_ACTION, state.lastTrigger)
     }
 
     @Test

@@ -53,21 +53,8 @@ fun MainRollScreen(
 
     MainRollScreenContent(
         uiState = uiState,
-        onSelectDiceType = viewModel::selectDiceType,
-        onQuantityChange = viewModel::setQuantity,
-        onModifierChange = viewModel::setModifier,
-        onRollClick = { viewModel.triggerRoll(RollTrigger.TAP_BUTTON) },
         onSwipeRoll = { viewModel.triggerRoll(RollTrigger.GESTURE_SWIPE) },
         onShakeRoll = { viewModel.rollDice(RollTrigger.DEVICE_SHAKE) },
-        onQuickPresetClick = { diceType, quantity, modifier, label ->
-            viewModel.triggerRoll(
-                trigger = RollTrigger.QUICK_ACTION,
-                customDiceType = diceType,
-                customQuantity = quantity,
-                customModifier = modifier,
-                label = label
-            )
-        },
         onShakeToggle = viewModel::setShakeEnabled,
         onSoundToggle = viewModel::setSoundEnabled,
         onHapticsToggle = viewModel::setHapticsEnabled,
@@ -83,13 +70,8 @@ fun MainRollScreen(
 @Composable
 fun MainRollScreenContent(
     uiState: RollUiState,
-    onSelectDiceType: (DiceType) -> Unit,
-    onQuantityChange: (Int) -> Unit,
-    onModifierChange: (Int) -> Unit,
-    onRollClick: () -> Unit,
     onSwipeRoll: () -> Unit,
     onShakeRoll: () -> Unit,
-    onQuickPresetClick: (DiceType, Int, Int, String) -> Unit,
     onShakeToggle: (Boolean) -> Unit,
     onSoundToggle: (Boolean) -> Unit,
     onHapticsToggle: (Boolean) -> Unit,
@@ -115,7 +97,7 @@ fun MainRollScreenContent(
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 },
@@ -202,13 +184,8 @@ fun MainRollScreenPreview() {
     RollitTheme {
         MainRollScreenContent(
             uiState = sampleState,
-            onSelectDiceType = {},
-            onQuantityChange = {},
-            onModifierChange = {},
-            onRollClick = {},
             onSwipeRoll = {},
             onShakeRoll = {},
-            onQuickPresetClick = { _, _, _, _ -> },
             onShakeToggle = {},
             onSoundToggle = {},
             onHapticsToggle = {},

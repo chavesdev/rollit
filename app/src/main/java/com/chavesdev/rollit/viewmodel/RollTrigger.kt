@@ -6,6 +6,4 @@ package com.chavesdev.rollit.viewmodel
 enum class RollTrigger {
     GESTURE_SWIPE,
     DEVICE_SHAKE,
-    TAP_BUTTON,
-    QUICK_ACTION
 }

@@ -44,7 +44,8 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = DiceShadowBlue,
 
     outline = Color(0xFF475569),
-    outlineVariant = Color(0xFF1E293B)
+    outlineVariant = Color(0xFF1E293B),
+    error = Color(0xFFA12727)
 )
 
 private val LightColorScheme = lightColorScheme(

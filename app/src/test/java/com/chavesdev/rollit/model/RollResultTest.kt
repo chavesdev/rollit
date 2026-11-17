@@ -37,29 +37,6 @@ class RollResultTest {
     }
 
     @Test
-    fun testNat20AndNat1() {
-        val nat20 = RollResult(
-            diceType = DiceType.D20,
-            quantity = 1,
-            rolls = listOf(20)
-        )
-        assertTrue(nat20.isNat20)
-        assertFalse(nat20.isNat1)
-        assertTrue(nat20.isCriticalHit)
-        assertFalse(nat20.isCriticalFail)
-
-        val nat1 = RollResult(
-            diceType = DiceType.D20,
-            quantity = 1,
-            rolls = listOf(1)
-        )
-        assertFalse(nat1.isNat20)
-        assertTrue(nat1.isNat1)
-        assertFalse(nat1.isCriticalHit)
-        assertTrue(nat1.isCriticalFail)
-    }
-
-    @Test
     fun testFactoryCreate() {
         val random = Random(99)
         val result = RollResult.create(

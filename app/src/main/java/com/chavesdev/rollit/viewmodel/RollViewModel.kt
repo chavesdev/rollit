@@ -69,7 +69,7 @@ class RollViewModel(
     }
 
     fun triggerRoll(
-        trigger: RollTrigger = RollTrigger.TAP_BUTTON,
+        trigger: RollTrigger = RollTrigger.GESTURE_SWIPE,
         customDiceType: DiceType? = null,
         customQuantity: Int? = null,
         customModifier: Int? = null,
@@ -85,7 +85,7 @@ class RollViewModel(
     }
 
     fun rollDice(
-        trigger: RollTrigger = RollTrigger.TAP_BUTTON,
+        trigger: RollTrigger = RollTrigger.GESTURE_SWIPE,
         diceType: DiceType? = null,
         quantity: Int? = null,
         modifier: Int? = null,
@@ -94,8 +94,8 @@ class RollViewModel(
         if (_uiState.value.isRolling) return
 
         val targetDiceType = diceType ?: _uiState.value.selectedDiceType
-        val targetQuantity = (quantity ?: _uiState.value.quantity).coerceIn(MIN_QUANTITY, MAX_QUANTITY)
-        val targetModifier = (modifier ?: _uiState.value.modifier).coerceIn(MIN_MODIFIER, MAX_MODIFIER)
+        val targetQuantity = (quantity ?: _uiState.value.quantity)
+        val targetModifier = (modifier ?: _uiState.value.modifier)
 
         rollJob?.cancel()
         rollJob = viewModelScope.launch {
@@ -131,17 +131,11 @@ class RollViewModel(
                 label = label,
             )
 
-//            val historyItem = DiceRollHistoryItem(
-//                rollResult = finalResult,
-//                presetName = label,
-//            )
-
             _uiState.update { state ->
                 state.copy(
                     isRolling = false,
                     rollingDisplayValues = emptyList(),
                     currentResult = finalResult,
-//                    history = listOf(historyItem) + state.history
                 )
             }
 
@@ -174,7 +168,7 @@ class RollViewModel(
         setQuantity(historyItem.rollResult.quantity)
         setModifier(historyItem.rollResult.modifier)
         triggerRoll(
-            trigger = RollTrigger.QUICK_ACTION,
+            trigger = RollTrigger.GESTURE_SWIPE,
             customDiceType = historyItem.rollResult.diceType,
             customQuantity = historyItem.rollResult.quantity,
             customModifier = historyItem.rollResult.modifier,

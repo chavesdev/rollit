@@ -23,17 +23,11 @@ data class RollResult(
     val total: Int
         get() = rawTotal + modifier
 
-    val isNat20: Boolean
-        get() = (diceType == DiceType.D20) && (quantity == 1) && (rolls.firstOrNull() == 20)
-
-    val isNat1: Boolean
-        get() = (diceType == DiceType.D20) && (quantity == 1) && (rolls.firstOrNull() == 1)
-
     val isCriticalHit: Boolean
-        get() = isNat20 || (rolls.isNotEmpty() && rolls.all { it == diceType.sides })
+        get() = (rolls.isNotEmpty() && rolls.all { it == diceType.sides })
 
     val isCriticalFail: Boolean
-        get() = isNat1 || (rolls.isNotEmpty() && rolls.all { it == 1 })
+        get() = (rolls.isNotEmpty() && rolls.all { it == 1 })
 
     val formula: String
         get() {

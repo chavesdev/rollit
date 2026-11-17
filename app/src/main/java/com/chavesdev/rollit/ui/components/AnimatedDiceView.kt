@@ -91,7 +91,7 @@ fun AnimatedDiceView(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 350, easing = LinearEasing),
+            animation = tween(durationMillis = 350, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "rotationX"
@@ -297,8 +297,8 @@ fun SingleDieView(
     size: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val critHitColor = Color(0xFFFFD700) // Gold
+    val primaryColor = MaterialTheme.colorScheme.onBackground
+    val critHitColor = Color(0xFF3D8C31) // Gold
     val critFailColor = MaterialTheme.colorScheme.error
 
     val dieBgColor = when {
@@ -319,37 +319,12 @@ fun SingleDieView(
             .shadow(16.dp, RoundedCornerShape(24.dp)),
         contentAlignment = Alignment.Center
     ) {
-        if (diceType == DiceType.D6) {
-            // Enhanced 3D Cube perspective with shading gradients, bevels, and distinct face illumination
-            Canvas(modifier = Modifier.size(size)) {
-                drawD6Die(
-                    value = value,
-                    dieBgColor = dieBgColor,
-                    pipColor = textColor
-                )
-            }
-        } else {
-            // Elevated 3D emblem appearance for polyhedral dice with metallic/gem gradients and typography
-//            Canvas(modifier = Modifier.size(size)) {
-//                drawEnhanced3DPolyhedralDie(
-//                    diceType = diceType,
-//                    dieBgColor = dieBgColor,
-//                    strokeColor = textColor
-//                )
-//            }
-//
-//            Text(
-//                text = value.toString(),
-//                style = when {
-//                    size >= 180.dp -> MaterialTheme.typography.displaySmall
-//                    size >= 120.dp -> MaterialTheme.typography.headlineLarge
-//                    else -> MaterialTheme.typography.headlineMedium
-//                }.copy(
-//                    fontWeight = FontWeight.Black,
-//                    color = textColor,
-//                    textAlign = TextAlign.Center
-//                )
-//            )
+        Canvas(modifier = Modifier.size(size)) {
+            drawD6Die(
+                value = value,
+                dieBgColor = dieBgColor,
+                pipColor = textColor
+            )
         }
     }
 }

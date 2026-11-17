@@ -5,6 +5,7 @@ import kotlin.random.Random
 
 /**
  * Standard dice types supported by the Rollit dice roller application.
+ * At the moment I'm just using a die with 6 sides
  */
 @Serializable
 enum class DiceType(
@@ -39,8 +40,6 @@ enum class DiceType(
     }
 
     companion object {
-        val standardDice: List<DiceType> = listOf(D4, D6, D8, D10, D12, D20, D100)
-
         fun fromSides(sides: Int): DiceType? {
             return entries.firstOrNull { it.sides == sides }
         }
