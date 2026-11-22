@@ -68,6 +68,10 @@ class RollViewModel(
         _uiState.update { it.copy(shakeSensitivity = sensitivity) }
     }
 
+    fun setUpdateAvailable(available: Boolean) {
+        _uiState.update { it.copy(isUpdateAvailable = available) }
+    }
+
     fun triggerRoll(
         trigger: RollTrigger = RollTrigger.GESTURE_SWIPE,
         customDiceType: DiceType? = null,

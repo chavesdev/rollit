@@ -28,4 +28,7 @@
     <string name="sound_effects_subtitle">Reproduzir som ao rolar dados e em críticos</string>
     <string name="haptic_vibration">Vibração Hápica</string>
     <string name="haptic_vibration_subtitle">Vibrar hardware ao rolar dados e eventos críticos</string>
+    <string name="update_available">Atualização Disponível</string>
+    <string name="update_available_message">Uma nova versão do Rollit está disponível. Atualize agora para obter os recursos e melhorias mais recentes.</string>
+    <string name="update_now">Atualizar Agora</string>
 </resources>

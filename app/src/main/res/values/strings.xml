@@ -28,4 +28,7 @@
     <string name="sound_effects_subtitle">Play audio feedback during dice roll and criticals</string>
     <string name="haptic_vibration">Haptic Vibration</string>
     <string name="haptic_vibration_subtitle">Vibrate hardware on dice roll and critical events</string>
+    <string name="update_available">Update Available</string>
+    <string name="update_available_message">A new version of Rollit is available. Update now to get the latest features and improvements.</string>
+    <string name="update_now">Update Now</string>
 </resources>

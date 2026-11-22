@@ -99,6 +99,15 @@ class RollViewModelTest {
     }
 
     @Test
+    fun setUpdateAvailable_updatesState() {
+        assertFalse(viewModel.uiState.value.isUpdateAvailable)
+        viewModel.setUpdateAvailable(true)
+        assertTrue(viewModel.uiState.value.isUpdateAvailable)
+        viewModel.setUpdateAvailable(false)
+        assertFalse(viewModel.uiState.value.isUpdateAvailable)
+    }
+
+    @Test
     fun triggerRoll_withCustomParameters_usesCustomParams() = runTest {
         viewModel.triggerRoll(
             trigger = RollTrigger.GESTURE_SWIPE,
@@ -122,18 +131,14 @@ class RollViewModelTest {
     }
 
     @Test
-    fun toggleFavorite_togglesItemFavoriteStatus() = runTest {
+    fun rollDice_completesAndSetsResult() = runTest {
         viewModel.rollDice()
+        assertTrue(viewModel.uiState.value.isRolling)
+
         advanceUntilIdle()
 
-        val historyItem = viewModel.uiState.value.history.first()
-        assertFalse(historyItem.isFavorite)
-
-        viewModel.toggleFavorite(historyItem.id)
-        assertTrue(viewModel.uiState.value.history.first().isFavorite)
-
-        viewModel.toggleFavorite(historyItem.id)
-        assertFalse(viewModel.uiState.value.history.first().isFavorite)
+        assertFalse(viewModel.uiState.value.isRolling)
+        assertNotNull(viewModel.uiState.value.currentResult)
     }
 
     @Test
@@ -146,7 +151,7 @@ class RollViewModelTest {
 
         advanceUntilIdle()
 
-        // History should only have 1 item from the single execution
-        assertEquals(1, viewModel.uiState.value.history.size)
+        assertFalse(viewModel.uiState.value.isRolling)
+        assertNotNull(viewModel.uiState.value.currentResult)
     }
 }

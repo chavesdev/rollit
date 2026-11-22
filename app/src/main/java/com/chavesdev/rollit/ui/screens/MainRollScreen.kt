@@ -35,6 +35,7 @@ import com.chavesdev.rollit.model.RollResult
 import com.chavesdev.rollit.ui.components.AnimatedDiceView
 import com.chavesdev.rollit.ui.components.SettingsSheet
 import com.chavesdev.rollit.ui.components.ShakeSensorEffect
+import com.chavesdev.rollit.ui.components.UpdateAvailableSheet
 import com.chavesdev.rollit.ui.theme.DeepNavyBackground
 import com.chavesdev.rollit.ui.theme.RollitTheme
 import com.chavesdev.rollit.viewmodel.RollTrigger
@@ -47,6 +48,7 @@ import com.chavesdev.rollit.viewmodel.RollViewModel
 @Composable
 fun MainRollScreen(
     viewModel: RollViewModel,
+    onUpdateClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -59,6 +61,8 @@ fun MainRollScreen(
         onSoundToggle = viewModel::setSoundEnabled,
         onHapticsToggle = viewModel::setHapticsEnabled,
         onSensitivityChange = viewModel::setShakeSensitivity,
+        onUpdateClick = onUpdateClick,
+        onUpdateDismiss = { viewModel.setUpdateAvailable(false) },
         modifier = modifier
     )
 }
@@ -76,6 +80,8 @@ fun MainRollScreenContent(
     onSoundToggle: (Boolean) -> Unit,
     onHapticsToggle: (Boolean) -> Unit,
     onSensitivityChange: (Float) -> Unit,
+    onUpdateClick: () -> Unit,
+    onUpdateDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showSettingsSheet by remember { mutableStateOf(false) }
@@ -154,6 +160,14 @@ fun MainRollScreenContent(
                 onDismissRequest = { showSettingsSheet = false }
             )
         }
+
+        // Update Available Bottom Sheet
+        if (uiState.isUpdateAvailable) {
+            UpdateAvailableSheet(
+                onUpdateClick = onUpdateClick,
+                onDismissRequest = onUpdateDismiss
+            )
+        }
     }
 }
 
@@ -189,7 +203,9 @@ fun MainRollScreenPreview() {
             onShakeToggle = {},
             onSoundToggle = {},
             onHapticsToggle = {},
-            onSensitivityChange = {}
+            onSensitivityChange = {},
+            onUpdateClick = {},
+            onUpdateDismiss = {}
         )
     }
 }
