@@ -20,4 +20,5 @@ data class RollUiState(
     val isHapticsEnabled: Boolean = true,
     val shakeSensitivity: Float = 2.5f,
     val lastTrigger: RollTrigger? = null,
+    val isUpdateAvailable: Boolean = false,
 )
