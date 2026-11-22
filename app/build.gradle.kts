@@ -15,8 +15,8 @@ android {
         applicationId = "com.chavesdev.rollit"
         minSdk = 24
         targetSdk = 37
-        versionCode = 100000200
-        versionName = "1.0.2"
+        versionCode = 100000300
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
