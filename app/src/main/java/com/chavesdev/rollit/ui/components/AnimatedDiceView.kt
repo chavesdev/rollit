@@ -80,10 +80,6 @@ fun AnimatedDiceView(
     onSwipeRoll: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // User interaction 3D tilt state
-    var userRotationX by remember { mutableStateOf(0f) }
-    var userRotationY by remember { mutableStateOf(0f) }
-
     // Animation transitions for rolling state
     val infiniteTransition = rememberInfiniteTransition(label = "DiceRollingAnimation")
 

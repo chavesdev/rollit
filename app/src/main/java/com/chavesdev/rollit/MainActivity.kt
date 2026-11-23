@@ -43,6 +43,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        com.google.android.gms.ads.MobileAds.initialize(this)
+
         feedbackManager = FeedbackManager(applicationContext)
 
         setContent {

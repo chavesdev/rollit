@@ -88,6 +88,17 @@ class RollViewModel(
         )
     }
 
+    fun resetRoll() {
+        rollJob?.cancel()
+        _uiState.update {
+            it.copy(
+                isRolling = false,
+                rollingDisplayValues = emptyList(),
+                currentResult = null
+            )
+        }
+    }
+
     fun rollDice(
         trigger: RollTrigger = RollTrigger.GESTURE_SWIPE,
         diceType: DiceType? = null,

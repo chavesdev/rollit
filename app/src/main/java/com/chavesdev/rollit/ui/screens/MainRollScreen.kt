@@ -2,8 +2,10 @@ package com.chavesdev.rollit.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -27,12 +29,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chavesdev.rollit.R
 import com.chavesdev.rollit.model.DiceRollHistoryItem
 import com.chavesdev.rollit.model.DiceType
 import com.chavesdev.rollit.model.RollResult
 import com.chavesdev.rollit.ui.components.AnimatedDiceView
+import com.chavesdev.rollit.ui.components.BannerAdView
 import com.chavesdev.rollit.ui.components.SettingsSheet
 import com.chavesdev.rollit.ui.components.ShakeSensorEffect
 import com.chavesdev.rollit.ui.components.UpdateAvailableSheet
@@ -122,7 +126,7 @@ fun MainRollScreenContent(
             )
         }
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
@@ -132,17 +136,32 @@ fun MainRollScreenContent(
                     )
                 )
                 .padding(innerPadding),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Immersive Fullscreen Animated Dice View
-            AnimatedDiceView(
-                diceType = uiState.selectedDiceType,
-                quantity = uiState.quantity,
-                isRolling = uiState.isRolling,
-                rollingValues = uiState.rollingDisplayValues,
-                currentResult = uiState.currentResult,
-                onSwipeRoll = onSwipeRoll,
-                modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedDiceView(
+                    diceType = uiState.selectedDiceType,
+                    quantity = uiState.quantity,
+                    isRolling = uiState.isRolling,
+                    rollingValues = uiState.rollingDisplayValues,
+                    currentResult = uiState.currentResult,
+                    onSwipeRoll = onSwipeRoll,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Banner Ad at the bottom of the screen
+            BannerAdView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                adUnitId = stringResource(R.string.banner_home_bottom)
             )
         }
 

@@ -1,0 +1,5 @@
+<resources>
+    <!-- Debug AdMob IDs (Google Test Ads) -->
+    <string name="app_add_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="banner_home_bottom" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+</resources>

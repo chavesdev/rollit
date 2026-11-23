@@ -1,0 +1,5 @@
+<resources>
+    <!-- Release AdMob IDs (Production) -->
+    <string name="app_add_id" translatable="false">ca-app-pub-9102404832228087~7986150158</string>
+    <string name="banner_home_bottom" translatable="false">ca-app-pub-9102404832228087/2994863729</string>
+</resources>

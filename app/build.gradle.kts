@@ -15,8 +15,8 @@ android {
         applicationId = "com.chavesdev.rollit"
         minSdk = 24
         targetSdk = 37
-        versionCode = 100000300
-        versionName = "1.0.3"
+        versionCode = 100000301
+        versionName = "1.0.301"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +29,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+
+        debug {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -77,6 +84,7 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp)
     implementation(libs.play.services.location)
+    implementation(libs.play.services.ads)
     implementation(libs.retrofit)
     implementation(libs.inapp.update)
     implementation(libs.inapp.update.ktx)
